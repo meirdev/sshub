@@ -8,7 +8,7 @@ from .models import Host
 
 def get_host_route_sync(host_id: int) -> list[dict]:
     """Load host and its proxy_jump chain, returning dicts with connection info."""
-    host = Host.objects.select_related("proxy_jump").get(pk=host_id)  # ty:ignore[unresolved-attribute]
+    host = Host.objects.select_related("proxy_jump").get(pk=host_id)
 
     result = []
     for h in host.route:
