@@ -1,0 +1,64 @@
+{% load static %}
+<style>
+  .field-live_output .readonly {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+  }
+</style>
+<div
+  id="live-output"
+  data-execution-id="{{ execution_id }}"
+  data-batch-id="{{ batch_id }}"
+  style="height: 400px; border-radius: 4px; overflow: hidden"
+></div>
+{{ output|json_script:"live-output-data" }}
+<script type="module">
+  var el = document.getElementById("live-output");
+  var existingOutput = JSON.parse(
+    document.getElementById("live-output-data").textContent,
+  );
+
+  var { init, Terminal, FitAddon } =
+    await import("{% static 'core/vendor/ghostty-web/ghostty-web.js' %}");
+  await init("{% static 'core/vendor/ghostty-web/ghostty-vt.wasm' %}");
+
+  var term = new Terminal({
+    cursorBlink: false,
+    fontSize: 14,
+    fontFamily: 'Monaco, Menlo, "Courier New", monospace',
+    scrollback: 50000,
+    theme: { background: "#1e1e1e", foreground: "#d4d4d4" },
+  });
+
+  var fitAddon = new FitAddon();
+  term.loadAddon(fitAddon);
+  term.open(el);
+  fitAddon.fit();
+
+  new ResizeObserver(function () {
+    fitAddon.fit();
+  }).observe(el);
+
+  if (existingOutput) {
+    term.write(existingOutput);
+  }
+
+  var exId = el.dataset.executionId;
+  var batchId = el.dataset.batchId;
+  var proto = location.protocol === "https:" ? "wss:" : "ws:";
+  var ws = new WebSocket(
+    proto + "//" + location.host + "/ws/snippet-exec/" + batchId + "/",
+  );
+
+  ws.onmessage = function (e) {
+    var msg = JSON.parse(e.data);
+    if (msg.type === "output" && String(msg.execution_id) === exId) {
+      term.write(msg.data);
+    }
+    if (msg.type === "status" && String(msg.execution_id) === exId) {
+      var badge = document.querySelector(".field-status .readonly");
+      if (badge) badge.textContent = msg.status;
+    }
+  };
+</script>

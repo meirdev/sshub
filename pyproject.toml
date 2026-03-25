@@ -1,0 +1,25 @@
+[project]
+name = "sshub"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "asyncssh>=2.22.0",
+    "channels>=4.3.2",
+    "cryptography>=46.0.5",
+    "daphne>=4.2.1",
+    "django>=6.0.3",
+    "django-auditlog>=3.4.1",
+    "django-colorfield>=0.14.0",
+    "validators>=0.35.0",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.15.7"]
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.ty.rules]
+unresolved-attribute = "ignore" # Many issues with Django

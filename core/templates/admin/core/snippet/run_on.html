@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %} {% load i18n %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    {% for snippet in snippets %}
+      <input
+        type="hidden"
+        name="{{ action_checkbox_name }}"
+        value="{{ snippet.pk }}"
+      />
+    {% endfor %}
+    <input type="hidden" name="action" value="run_on" />
+
+    <fieldset>
+      <h2>Selected snippets</h2>
+      <ul>
+        {% for snippet in snippets %}
+          <li>{{ snippet.name }}</li>
+        {% endfor %}
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <h2>Select hosts</h2>
+      <div
+        style="
+        max-height: 300px;
+        overflow: auto;
+        border: 1px solid #ccc;
+        padding: 8px;
+      "
+      >
+        {{ run_form.hosts }}
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <h2>Or select by tags (all hosts with these tags)</h2>
+      <div style="padding: 8px">{{ run_form.tags }}</div>
+    </fieldset>
+
+    <div style="margin-top: 16px">
+      <input type="submit" name="apply" value="Run" class="default" />
+      <a href="{% url 'admin:core_snippet_changelist' %}">Cancel</a>
+    </div>
+  </form>
+{% endblock %}
