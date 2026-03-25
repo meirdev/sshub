@@ -8,6 +8,7 @@ js-fmt:
 	bun prettier --plugin prettier-plugin-jinja-template --parser=jinja-template --write "**/*.js" "**/*.html"
 
 py-fmt:
+	uv run ruff check --fix .
 	uv run ruff format .
 
 vendor: vendor-ghostty vendor-codemirror
