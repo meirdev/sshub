@@ -2,10 +2,15 @@ VENDOR_DIR = core/static/core/vendor
 GHOSTTY_VERSION = 0.3.0
 CM_BUILD_DIR = /tmp/cm_build
 
-.PHONY: js-fmt py-fmt vendor vendor-ghostty vendor-codemirror
+.PHONY: html-fmt js-fmt py-fmt vendor vendor-ghostty vendor-codemirror
+
+fmt: html-fmt js-fmt py-fmt
+
+html-fmt:
+	bun prettier --plugin prettier-plugin-jinja-template --parser=jinja-template --write "**/*.html"
 
 js-fmt:
-	bun prettier --plugin prettier-plugin-jinja-template --parser=jinja-template --write "**/*.js" "**/*.html"
+	bun prettier --write "**/*.js"
 
 py-fmt:
 	uv run ruff check --fix .
